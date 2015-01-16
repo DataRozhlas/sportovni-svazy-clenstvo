@@ -4,14 +4,17 @@ mapContainer = container.append \div
 
 map = ig.initMap mapContainer
 geojson = topojson.feature ig.data.okresy, ig.data.okresy.objects."data"
-console.log geojson.features.0.properties
+for feature in geojson.features
+  feature.properties.all_all = feature.properties.dospeli_muzi + feature.properties.dospeli_zeny + feature.properties.dorost_muzi + feature.properties.dorost_zeny + feature.properties.zaci_muzi + feature.properties.zaci_zeny
+
 layerDefs =
-  * name: "Muži" headerSport: "Muži", headerSum: "dospeli_muzi"
-  * name: "Ženy" headerSport: "Ženy", headerSum: "dospeli_zeny"
-  * name: "Dorostenci" headerSport: "Dorostenci", headerSum: "dorost_muzi"
-  * name: "Dorostenky" headerSport: "Dorostenky", headerSum: "dorost_zeny"
-  * name: "Žáci" headerSport: "Žáci", headerSum: "zaci_muzi"
-  * name: "Žačky" headerSport: "Žačky", headerSum: "zaci_zeny"
+  * name: "celkem" headerSport: "Celkem", headerSum: "all_all"
+  * name: "muži" headerSport: "Muži", headerSum: "dospeli_muzi"
+  * name: "ženy" headerSport: "Ženy", headerSum: "dospeli_zeny"
+  * name: "dorostenci" headerSport: "Dorostenci", headerSum: "dorost_muzi"
+  * name: "dorostenky" headerSport: "Dorostenky", headerSum: "dorost_zeny"
+  * name: "žáci" headerSport: "Žáci", headerSum: "zaci_muzi"
+  * name: "žačky" headerSport: "Žačky", headerSum: "zaci_zeny"
 layersAssoc = {}
 
 for let {name, headerSport, headerSum} in layerDefs
@@ -29,4 +32,5 @@ for let {name, headerSport, headerSum} in layerDefs
       onEachFeature: (feature, layer) ->
         layer.bindPopup "#{feature.properties.NAZOK}, #name:<br>#{ig.utils.formatNumber feature.properties[headerSport]} sportuje z #{ig.utils.formatNumber feature.properties[headerSum]} celkem v kraji<br>(#{ig.utils.formatNumber 100 * feature.properties[headerSport] / feature.properties[headerSum], 2} %)"
 
+layersAssoc['celkem'].addTo map
 L.control.layers layersAssoc, {}, collapsed: no .addTo map
